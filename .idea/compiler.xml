@@ -7,7 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="TelegramBotJava" />
+        <module name="TelegramBotSWP" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="dispatcher" target="18" />
+    </bytecodeTargetLevel>
   </component>
 </project>
