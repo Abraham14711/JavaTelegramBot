@@ -1,5 +1,6 @@
 package ru.relex.controller;
 
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -10,7 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
 @Component
-public class TelegramBot extends TelegramLongPollingBot{
+public class TelegramBot extends TelegramLongPollingBot {
 
     @Value("${bot.token}")
     private String botToken;
@@ -29,35 +30,40 @@ public class TelegramBot extends TelegramLongPollingBot{
     }
 
 
-    private MenuOfCompetencies menu=new MenuOfCompetencies();
+    private MenuOfCompetencies menu = new MenuOfCompetencies();
 
+    @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
+
+
         var originalMessage = update.getMessage();
         var user = originalMessage.getFrom();
         var id = user.getId();
 
         if (originalMessage.getText().equals("/start")) {
             startCommand(id);
-            sendMenu(id,"someText");
+            sendMenu(id);
+
+
         }
-        //sendText(id, originalMessage.getText());
     }
 
-    public void sendMenu(Long who, String txt){
-        SendMessage sm = SendMessage.builder().chatId(who.toString())
-                .parseMode("HTML").text(txt)
-                .replyMarkup(menu.competencies).build();
+    public void sendMenu(Long who) {
+        SendMessage sendKeyboard1 = SendMessage.builder().chatId(who.toString())
+                .parseMode("HTML").text("После нажатия на кнопку откроется окно для выбора вакансий и прохождения тестирования")
+                .replyMarkup(menu.vacancy).build();
 
         try {
-            execute(sm);
+            execute(sendKeyboard1);
+
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public void sendText(Long who, String what){
+    public void sendText(Long who, String what) {
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString()) //Who are we sending a message to
                 .text(what).build();    //Message content
@@ -69,12 +75,14 @@ public class TelegramBot extends TelegramLongPollingBot{
     }
 
 
-    private void startCommand(Long user_id){
+    private void startCommand(Long user_id) {
         String welcome_text = "Здравствуйте. Данный бот предназначен для оценки ваших компетенций. \n " +
                 "Правила использования бота : \n" +
-                "1) Выберите компетенции, которыми, по вашему мнению, вы обладаете.\n" +
-                "2) Пройдите тест, чтобы узнать ваши компетенции.\n" +
-                "3) Получите результат и персональные советы по развитию.";
-        sendText(user_id,welcome_text);
+                "1) Откройте webApp\n" +
+                "2) Выберите вакансию, на которую вы хотите податься\n" +
+                "3) Пройдите тест, чтобы узнать ваши компетенции. Искусственный интеллект так же поможет подобрать подходящие вакансии основываясь на ответах\n" +
+                "4) Получите результат и персональные советы по развитию не только внутри приложения но и на свою почту.";
+        sendText(user_id, welcome_text);
+
     }
 }
